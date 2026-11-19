@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>2x panel</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#120a1f;--card:#1e1233;--line:#3a2461;--pu:#8b5cf6;--tx:#f3eefc;--mu:#a99bc6;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,"Noto Sans Bengali",sans-serif;line-height:1.5}
+.w{max-width:480px;margin:0 auto;padding:14px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+h1{font-size:22px;margin:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.row{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.mu{color:var(--mu);font-size:14px}
+button{background:var(--pu);color:#fff;border:0;border-radius:10px;padding:11px 14px;font-size:15px;font-weight:600;width:100%}
+button.s{width:auto;padding:8px 16px}
+button.g{background:transparent;border:1px solid var(--line);color:var(--mu);margin-top:6px}
+button.chip{width:auto;background:var(--card);border:1px solid var(--pu);padding:6px 12px;font-size:15px}
+button:disabled{opacity:.6}
+input{width:100%;padding:11px;border-radius:10px;border:1px solid var(--line);background:#150c26;color:var(--tx);font-size:16px;margin:6px 0}
+.num{font-size:19px;font-weight:600;letter-spacing:1px}
+.msg{margin-top:8px;color:#fca5a5;font-size:14px}
+.link{display:none;background:#0f2a1c;border:1px solid #1f7a4a;border-radius:12px;padding:12px;margin-bottom:12px}
+.link p{margin:0 0 8px;color:#86efac;font-weight:600}
+.lb{word-break:break-all;background:#0a1a12;border-radius:8px;padding:10px;margin-bottom:10px;user-select:all}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="w">
+  <div class="top"><h1>2x panel</h1><button class="chip" id="bal" hidden onclick="tg()">৳ <span id="bv">0</span> ＋</button></div>
+
+  <div class="card" id="auth">
+    <b>লগইন / নতুন অ্যাকাউন্ট</b>
+    <input id="em" type="email" placeholder="ইমেইল (Gmail)" autocomplete="email">
+    <input id="pw" type="password" placeholder="পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর)" autocomplete="current-password">
+    <div class="row"><button onclick="login()">লগইন</button><button class="g" style="margin:0" onclick="signup()">নতুন অ্যাকাউন্ট</button></div>
+    <div class="msg" id="am"></div>
+  </div>
+
+  <div class="card" id="add" hidden>
+    <b>ব্যালেন্সে টাকা যোগ করুন</b>
+    <div class="mu">নিচের নম্বরে বিকাশ/নগদে Send Money করে TrxID দিন</div>
+    <div class="row" style="margin:8px 0"><span class="num">01806119392</span><button class="s" onclick="cp('01806119392',this)">কপি</button></div>
+    <input id="trx" placeholder="TrxID" autocomplete="off" style="text-transform:uppercase">
+    <button id="ab" onclick="addm()">টাকা যোগ করুন</button>
+    <div class="msg" id="mm"></div>
+  </div>
+
+  <div id="app" hidden>
+    <div class="card row">
+      <div><b>All panel set up</b><div class="mu">১০০ ৳</div></div>
+      <button class="s" id="buy" onclick="buy()">কিনুন</button>
+    </div>
+    <div class="msg" id="bm"></div>
+    <div class="link" id="lk">
+      <p>আপনার লিংক</p>
+      <div class="lb" id="lt"></div>
+      <button onclick="cp(document.getElementById('lt').textContent,this)">লিংক কপি করুন</button>
+    </div>
+    <div class="mu" id="tot"></div>
+    <button class="g" onclick="out()">লগআউট</button>
+  </div>
+</div>
+<script>
+var sb=supabase.createClient('https://vikphnydkrmobdwklzoi.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZpa3Bobnlka3Jtb2Jkd2tsem9pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ5OTAyMDEsImV4cCI6MjExMDU2NjIwMX0.EkcJEBJRpVsmjbUnAUy1kCdgf4qKXLpoPEKX3xJ0roQ');
+var $=function(i){return document.getElementById(i)},bal=0;
+function cp(t,b){var o=b.textContent;function ok(){b.textContent='কপি হয়েছে ✓';setTimeout(function(){b.textContent=o},1500)}
+ function fb(){var a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');ok()}catch(e){}a.remove()}
+ if(navigator.clipboard){navigator.clipboard.writeText(t).then(ok,fb)}else{fb()}}
+function tg(){$('add').hidden=!$('add').hidden}
+function er(e){var m=(e&&e.message)||'';return m.indexOf('Invalid login')>-1?'ইমেইল বা পাসওয়ার্ড ভুল':m.indexOf('already')>-1?'এই ইমেইলে অ্যাকাউন্ট আছে, লগইন করুন':m.indexOf('least')>-1?'পাসওয়ার্ড কমপক্ষে ৬ অক্ষর দিন':'সমস্যা হয়েছে, আবার চেষ্টা করুন'}
+async function login(){$('am').textContent='';var r=await sb.auth.signInWithPassword({email:$('em').value.trim(),password:$('pw').value});if(r.error)$('am').textContent=er(r.error)}
+async function signup(){$('am').textContent='';var r=await sb.auth.signUp({email:$('em').value.trim(),password:$('pw').value});if(r.error)$('am').textContent=er(r.error);else if(!r.data.session)$('am').textContent='ইমেইল কনফার্ম করে লগইন করুন'}
+async function out(){await sb.auth.signOut()}
+async function info(){var r=await sb.rpc('my_info');if(r.error||!r.data)return;
+ bal=Number(r.data.balance);$('bv').textContent=bal;$('tot').textContent='মোট অর্ডার: '+r.data.total;
+ if(r.data.link){$('lt').textContent=r.data.link;$('lk').style.display='block';$('buy').hidden=true}}
+async function addm(){var m=$('mm'),b=$('ab'),v=$('trx').value.trim();m.textContent='';if(v.length<6){m.textContent='সঠিক TrxID দিন';return}
+ b.disabled=true;var r=await sb.rpc('add_money',{p_trx:v});b.disabled=false;
+ if(r.error){m.textContent='সমস্যা হয়েছে, আবার চেষ্টা করুন';return}
+ if(r.data===null){m.textContent='এই আইডিতে পেমেন্ট পাওয়া যায়নি বা আগেই ব্যবহার হয়েছে';return}
+ $('trx').value='';$('add').hidden=true;info()}
+async function buy(){var m=$('bm');m.textContent='';
+ if(bal<100){m.textContent='ব্যালেন্স কম। ওপরের ব্যালেন্সে চেপে টাকা যোগ করুন';$('add').hidden=false;return}
+ $('buy').disabled=true;var r=await sb.rpc('buy_package');$('buy').disabled=false;
+ if(r.error||!r.data){m.textContent='সমস্যা হয়েছে, আবার চেষ্টা করুন';return}
+ info()}
+function ui(s){var on=!!s;$('auth').hidden=on;$('app').hidden=!on;$('bal').hidden=!on;if(!on){$('add').hidden=true;$('lk').style.display='none';$('buy').hidden=false}else info()}
+sb.auth.onAuthStateChange(function(e,s){ui(s)});
+sb.auth.getSession().then(function(r){ui(r.data.session)});
+</script>
+</body>
+</html>
